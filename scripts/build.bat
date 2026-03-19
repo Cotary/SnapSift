@@ -1,13 +1,14 @@
 @echo off
-chcp 65001 >nul 2>&1
-title Realphoto - 生产构建
+title Realphoto - Production Build
 
 echo ========================================
-echo   Realphoto - 生产构建 (Windows)
+echo   Realphoto - Production Build (Windows)
 echo ========================================
 echo.
 
-:: ---- 设置 MSVC 环境 ----
+cd /d "%~dp0.."
+
+:: --- Find MSVC environment ---
 set "VCVARS="
 if exist "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat" (
     set "VCVARS=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
@@ -18,20 +19,28 @@ if exist "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\B
 if exist "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat" (
     set "VCVARS=C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
 )
+if exist "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat" (
+    set "VCVARS=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+)
 
 if defined VCVARS (
+    echo [INFO] Initializing MSVC: %VCVARS%
     call "%VCVARS%" >nul 2>&1
+) else (
+    echo [WARN] MSVC not found. Install Visual Studio Build Tools 2022 if compile fails.
 )
-
-cd /d "%~dp0.."
 
 if not exist "node_modules" (
-    echo [INFO] 安装 npm 依赖...
+    echo [INFO] Installing npm dependencies...
     call npm install
+    if %errorlevel% neq 0 (
+        echo [ERROR] npm install failed
+        pause
+        exit /b 1
+    )
 )
 
-echo [INFO] 开始构建...
-echo        这可能需要 5-10 分钟（Release 优化编译）
+echo [INFO] Starting build (this may take 5-10 minutes)...
 echo.
 
 call npm run tauri build
@@ -39,12 +48,12 @@ call npm run tauri build
 if %errorlevel% equ 0 (
     echo.
     echo ========================================
-    echo   构建完成！安装包位于:
-    echo   src-tauri\target\release\bundle\
+    echo   Build successful!
+    echo   Output: src-tauri\target\release\bundle\
     echo ========================================
 ) else (
     echo.
-    echo [ERROR] 构建失败，请检查上方错误信息
+    echo [ERROR] Build failed. Check the error messages above.
 )
 
 pause
