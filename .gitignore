@@ -22,3 +22,18 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Rust / Tauri build outputs
+src-tauri/target/
+WixTools*/
+NSIS*/
+
+# Packaged output
+dist/Realphoto/
+*.zip
+
+# AI model (large binary, download separately)
+src-tauri/resources/*.onnx
+
+# Similar images test data
+similar-images/
