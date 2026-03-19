@@ -78,17 +78,16 @@ if (-not (Test-Path "node_modules")) {
 }
 
 if (-not $SkipBuild) {
-    # ── STEP 1: frontend ─────────────────────────────────────────────────
-    Step 1 "Building frontend (Vite)..."
-    npm run build
-    if ($LASTEXITCODE -ne 0) { Fail "Frontend build failed" }
-    Ok "Frontend build done"
-
-    # ── STEP 2: Rust release ──────────────────────────────────────────────
-    Step 2 "Compiling Rust (cargo build --release)..."
-    cargo build --release
-    if ($LASTEXITCODE -ne 0) { Fail "Rust compile failed" }
-    Ok "Rust compile done"
+    # ── STEP 1+2: Tauri build (frontend + Rust + embed) ──────────────────
+    # "tauri build --no-bundle" does three things:
+    #   1. Runs "npm run build" (beforeBuildCommand in tauri.conf.json)
+    #   2. Compiles Rust in release mode
+    #   3. Embeds the frontend dist/ into the exe
+    # --no-bundle skips MSI/NSIS installer creation (avoids network downloads)
+    Step "1+2" "Building Tauri app (frontend + Rust + embed)..."
+    npx tauri build --no-bundle
+    if ($LASTEXITCODE -ne 0) { Fail "Tauri build failed" }
+    Ok "Tauri build done"
 } else {
     Warn "Skipping build (-SkipBuild flag set)"
 }
