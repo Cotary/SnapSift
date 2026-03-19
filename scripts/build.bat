@@ -1,8 +1,8 @@
 @echo off
-title Realphoto - Production Build
+title SnapSift - Production Build
 
 echo ========================================
-echo   Realphoto - Production Build (Windows)
+echo   SnapSift - Production Build (Windows)
 echo ========================================
 echo.
 

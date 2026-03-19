@@ -1,34 +1,35 @@
-# Realphoto — 多媒体整理与去重工具
+# SnapSift — Multimedia Organizer & Dedup Tool
 
-跨平台桌面应用，帮助你按日期自动归类照片/视频，并通过感知哈希（pHash）智能查找和清理相似图片。
+Cross-platform desktop app for organizing photos/videos by date and intelligently finding & cleaning similar images using perceptual hashing (pHash) + AI vector similarity.
 
-**技术栈**: Tauri 2.0 · Rust · React · TypeScript · Vite · Tailwind CSS · shadcn/ui · SQLite
-
----
-
-## 功能概览
-
-| 功能 | 说明 |
-|------|------|
-| 项目管理 | 创建多个整理项目，每个项目管理多个源文件夹和一个目标文件夹 |
-| 文件扫描 | 递归扫描 JPG/PNG/HEIC/WebP/MP4/MOV 等格式，提取 EXIF 拍摄时间、pHash、MD5 |
-| 按日期整理 | 支持 `YYYY/MM/DD`、`YYYY_MM` 等模板，Copy 或 Move 模式，自动冲突重命名 |
-| 相似图片去重 | pHash 汉明距离聚类，左键一键保留、右键手动切换，二次确认后物理删除 |
-| 缩略图预览 | Rust 后端实时生成压缩缩略图，带 LRU 缓存，避免前端加载大图 |
+**Tech Stack**: Tauri 2.0 · Rust · React · TypeScript · Vite · Tailwind CSS · shadcn/ui · SQLite
 
 ---
 
-## 环境要求
+## Features
 
-| 依赖 | 版本 | 安装方式 |
-|------|------|---------|
-| Node.js | ≥ 18 | [nodejs.org](https://nodejs.org/) |
-| Rust | ≥ 1.77 | [rustup.rs](https://rustup.rs/) |
-| **Windows 额外** | MSVC Build Tools | `winget install Microsoft.VisualStudio.2022.BuildTools` |
-| **macOS 额外** | Xcode CLT | `xcode-select --install` |
-| **Linux 额外** | 系统库 | 见下方说明 |
+| Feature | Description |
+|---------|-------------|
+| Project Management | Create multiple projects, each with multiple source folders and one target folder |
+| File Scanning | Recursively scan JPG/PNG/HEIC/WebP/MP4/MOV, extract EXIF date, pHash, MD5 |
+| Date Organization | Templates like `YYYY/MM/DD`, `YYYY_MM`, etc. Copy or Move mode with auto-rename on conflict |
+| Similar Image Dedup | pHash + AI (MobileNet-v3) Complete-Linkage clustering, user-configurable thresholds |
+| Thumbnail Preview | Rust backend generates compressed thumbnails with LRU cache |
+| Hover Preview | Full-resolution original image preview on hover |
 
-### Linux 系统依赖（Debian/Ubuntu）
+---
+
+## Requirements
+
+| Dependency | Version | Install |
+|------------|---------|---------|
+| Node.js | >= 18 | [nodejs.org](https://nodejs.org/) |
+| Rust | >= 1.77 | [rustup.rs](https://rustup.rs/) |
+| **Windows** | MSVC Build Tools | `winget install Microsoft.VisualStudio.2022.BuildTools` |
+| **macOS** | Xcode CLT | `xcode-select --install` |
+| **Linux** | System libs | See below |
+
+### Linux (Debian/Ubuntu)
 
 ```bash
 sudo apt install libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
@@ -36,13 +37,9 @@ sudo apt install libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchel
 
 ---
 
-## 一键启动
-
-项目提供了 `scripts/` 目录下的启动脚本，自动检查环境依赖并启动开发服务器。
+## Quick Start
 
 ### Windows
-
-双击运行，或在终端中执行：
 
 ```powershell
 .\scripts\dev.bat
@@ -55,26 +52,31 @@ chmod +x scripts/dev.sh
 ./scripts/dev.sh
 ```
 
-### 手动启动（所有平台通用）
+### Manual (all platforms)
 
 ```bash
-# 1. 安装前端依赖（仅首次）
-npm install
-
-# 2. 启动开发模式（同时编译 Rust 后端 + 启动 Vite 前端）
-npm run tauri dev
+npm install        # first time only
+npm run tauri dev  # starts Rust backend + Vite frontend
 ```
 
-> 首次启动 Rust 编译约需 2-5 分钟，后续增量编译很快。
+> First Rust compile takes ~2-5 minutes. Incremental builds are fast.
 
 ---
 
-## 生产构建
+## Production Build
 
-### Windows
+### Windows — Portable ZIP
+
+```powershell
+.\scripts\build-zip.ps1
+# Output: dist\SnapSift-v0.1.0-windows-x64.zip
+```
+
+### Windows — MSI Installer
 
 ```powershell
 .\scripts\build.bat
+# Output: src-tauri\target\release\bundle\msi\
 ```
 
 ### macOS / Linux
@@ -84,87 +86,103 @@ chmod +x scripts/build.sh
 ./scripts/build.sh
 ```
 
-### 手动构建
-
-```bash
-npm run tauri build
-```
-
-构建产物位于 `src-tauri/target/release/bundle/`：
-- **Windows**: `.msi` 和 `.exe` 安装包
-- **macOS**: `.dmg` 和 `.app`
-- **Linux**: `.deb` 和 `.AppImage`
+Build output in `src-tauri/target/release/bundle/`:
+- **Windows**: `.msi` installer
+- **macOS**: `.dmg` / `.app`
+- **Linux**: `.deb` / `.AppImage`
 
 ---
 
-## 使用指南
+## Usage Guide
 
-### 1. 创建项目
+### 1. Create a Project
 
-启动应用后点击「新建项目」，输入项目名称。
+Launch the app and click "New Project", enter a project name.
 
-### 2. 配置文件夹
+### 2. Configure Folders
 
-- **源文件夹**: 点击「添加文件夹」选择包含照片/视频的目录（支持多个）
-- **目标文件夹**: 点击「选择文件夹」设置整理后的输出目录
+- **Source folders**: Click "Add Folder" to select directories containing photos/videos (supports multiple)
+- **Target folder**: Click "Select Folder" to set the output directory
 
-### 3. 扫描文件
+### 3. Scan Files
 
-点击「开始扫描」，程序会：
-- 递归遍历所有源文件夹
-- 提取 EXIF 拍摄日期（失败则取文件创建/修改时间）
-- 为每张图片计算 pHash 感知哈希和 MD5 校验值
-- 实时显示扫描进度
+Click "Start Scan" to:
+- Recursively traverse all source folders
+- Extract EXIF capture date (falls back to file modified time)
+- Compute pHash and MD5 for each image
+- Show real-time scan progress
 
-### 4. 按日期整理
+### 4. Organize by Date
 
-扫描完成后，在「按日期整理」面板中：
-1. 选择日期模板（如 `YYYY/MM/DD`）
-2. 选择操作模式（复制 / 移动）
-3. 点击「开始整理」
+After scanning, in the "Organize" panel:
+1. Select a date template (e.g. `YYYY/MM/DD`)
+2. Choose operation mode (Copy / Move)
+3. Click "Start Organize"
 
-文件将按拍摄日期自动归类到目标文件夹的子目录中。
+### 5. Similar Image Dedup
 
-### 5. 相似图片去重
-
-点击「相似图片筛选」卡片进入去重页面：
-1. 点击「重新分析」执行 pHash 聚类（汉明距离 ≤ 8 归为一组）
-2. **左键点击**某张图片 = 仅保留该图，组内其他标记为待删
-3. **右键点击**某张图片 = 手动切换该图的保留/删除状态
-4. 底部显示待删文件数量和预计释放空间
-5. 点击「执行删除」后弹出确认列表，确认后物理删除
+Click "Similar Images" to enter the dedup page:
+1. Adjust pHash threshold (2-16) and AI similarity (80%-99%) sliders
+2. Click "Re-analyze" to run detection
+3. **Left-click** an image = keep only this one, mark others for deletion
+4. **Right-click** an image = toggle keep/delete status manually
+5. Use "Select All" / "Deselect All" / "Skip Below" for batch operations
+6. Click "Execute Delete" to review and confirm physical deletion
 
 ---
 
-## 项目结构
+## Project Structure
 
 ```
-e:\Realphoto/
-├── scripts/                # 一键启动/构建脚本
-│   ├── dev.bat / dev.sh    # 开发环境启动
-│   └── build.bat / build.sh # 生产构建
-├── src/                    # React 前端
-│   ├── pages/              # 页面组件
-│   │   ├── ProjectList.tsx     # 项目列表
-│   │   ├── ProjectDetail.tsx   # 项目详情（扫描+整理入口）
-│   │   └── DuplicateReview.tsx # 相似图片筛选
-│   ├── components/         # 可复用组件
-│   │   ├── ScanProgress.tsx    # 扫描进度条
-│   │   ├── OrganizePanel.tsx   # 日期整理面板
-│   │   ├── DuplicateGroupCard.tsx # 相似组展示
-│   │   └── ThumbnailImage.tsx  # 缩略图加载
-│   └── lib/                # 工具层
-│       ├── types.ts            # TypeScript 类型
-│       └── commands.ts         # Tauri 命令封装
-├── src-tauri/              # Rust 后端
+SnapSift/
+├── scripts/                   # Build & dev scripts
+│   ├── dev.bat / dev.sh       # Dev environment launcher
+│   ├── build.bat / build.sh   # Production build
+│   ├── build-zip.ps1          # Windows portable ZIP packager
+│   └── export_model.py        # ONNX model export script
+├── src/                       # React frontend
+│   ├── pages/
+│   │   ├── ProjectList.tsx        # Project list
+│   │   ├── ProjectDetail.tsx      # Project detail (scan + organize)
+│   │   └── DuplicateReview.tsx    # Similar image review
+│   ├── components/
+│   │   ├── DuplicateGroupCard.tsx # Duplicate group card
+│   │   ├── OrganizePanel.tsx      # Date organize panel
+│   │   ├── ScanProgress.tsx       # Scan progress bar
+│   │   └── ThumbnailImage.tsx     # Thumbnail loader
+│   └── lib/
+│       ├── types.ts               # TypeScript types
+│       └── commands.ts            # Tauri command wrappers
+├── src-tauri/                 # Rust backend
 │   └── src/
-│       ├── lib.rs              # Tauri 入口
-│       ├── db.rs               # SQLite 数据库
-│       ├── models.rs           # 数据模型
-│       ├── commands.rs         # Tauri 命令
-│       ├── scanner.rs          # 文件扫描引擎
-│       ├── organizer.rs        # 时间轴整理
-│       ├── dedup.rs            # pHash 聚类去重
-│       └── thumbnail.rs        # 缩略图生成
+│       ├── lib.rs                 # Tauri entry point
+│       ├── db.rs                  # SQLite database
+│       ├── models.rs              # Data models
+│       ├── commands.rs            # Tauri commands
+│       ├── scanner.rs             # File scan engine
+│       ├── organizer.rs           # Date organizer
+│       ├── dedup.rs               # pHash + AI dedup
+│       ├── embedder.rs            # AI feature extraction
+│       └── thumbnail.rs           # Thumbnail generator
+├── DEDUP_LOGIC.md             # Dedup algorithm documentation
 └── package.json
 ```
+
+---
+
+## AI Model
+
+The app uses MobileNet-v3-Small for AI-based image similarity detection. The ONNX model file (`mobilenet_v3_small.onnx`) should be placed in `src-tauri/resources/`.
+
+To export the model yourself:
+
+```bash
+pip install torch torchvision onnx
+python scripts/export_model.py
+```
+
+---
+
+## License
+
+MIT

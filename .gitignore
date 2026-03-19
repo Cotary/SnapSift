@@ -29,7 +29,7 @@ WixTools*/
 NSIS*/
 
 # Packaged output
-dist/Realphoto/
+dist/SnapSift/
 *.zip
 
 # AI model (large binary, download separately)

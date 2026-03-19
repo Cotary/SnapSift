@@ -2,7 +2,7 @@
 set -euo pipefail
 
 echo "========================================"
-echo "  Realphoto - 多媒体整理与去重工具"
+echo "  SnapSift - Multimedia Organizer & Dedup Tool"
 echo "  开发环境一键启动 (macOS / Linux)"
 echo "========================================"
 echo

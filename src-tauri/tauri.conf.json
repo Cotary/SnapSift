@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "Realphoto",
+  "productName": "SnapSift",
   "version": "0.1.0",
-  "identifier": "com.realphoto.app",
+  "identifier": "com.snapsift.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Realphoto",
+        "title": "SnapSift",
         "width": 1200,
         "height": 800,
         "resizable": true,

@@ -1,13 +1,13 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  Build Realphoto and package as portable Windows ZIP.
+  Build SnapSift and package as portable Windows ZIP.
 .DESCRIPTION
   1. Detects MSVC environment and initializes it.
   2. Builds the Vite frontend (npm run build).
   3. Compiles the Rust backend (cargo build --release).
-  4. Assembles files into dist\Realphoto\.
-  5. Compresses into dist\Realphoto-vX.X.X-windows-x64.zip.
+  4. Assembles files into dist\SnapSift\.
+  5. Compresses into dist\SnapSift-vX.X.X-windows-x64.zip.
 .EXAMPLE
   .\scripts\build-zip.ps1
   .\scripts\build-zip.ps1 -SkipBuild   # Package only, skip compile
@@ -31,7 +31,7 @@ $Root = Split-Path $PSScriptRoot -Parent
 Set-Location $Root
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  Realphoto - Windows ZIP Packager"       -ForegroundColor Cyan
+Write-Host "  SnapSift - Windows ZIP Packager"       -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
 # ── read version ─────────────────────────────────────────────────────────
@@ -39,8 +39,8 @@ $conf    = Get-Content "src-tauri\tauri.conf.json" | ConvertFrom-Json
 $Version = $conf.version
 if (-not $Version) { $Version = "0.1.0" }
 
-$AppDir  = "dist\Realphoto"
-$ZipName = "Realphoto-v$Version-windows-x64.zip"
+$AppDir  = "dist\SnapSift"
+$ZipName = "SnapSift-v$Version-windows-x64.zip"
 $ZipPath = "dist\$ZipName"
 
 Info "Version : $Version"
@@ -103,8 +103,8 @@ if (Test-Path $AppDir) { Remove-Item $AppDir -Recurse -Force }
 New-Item -ItemType Directory -Path "$AppDir\resources" -Force | Out-Null
 
 # exe
-Copy-Item $ExePath "$AppDir\Realphoto.exe"
-Info "[+] Realphoto.exe"
+Copy-Item $ExePath "$AppDir\SnapSift.exe"
+Info "[+] SnapSift.exe"
 
 # DirectML.dll (ORT GPU acceleration)
 $DmlSrc = "src-tauri\target\release\DirectML.dll"
@@ -127,12 +127,12 @@ if (Test-Path $OnnxSrc) {
 
 # README
 @"
-Realphoto v$Version
+SnapSift v$Version
 
-Usage: Double-click Realphoto.exe to launch.
+Usage: Double-click SnapSift.exe to launch.
 
 Files:
-  Realphoto.exe              Main application
+  SnapSift.exe               Main application
   DirectML.dll               GPU acceleration for AI (optional)
   resources/                 AI model files
 

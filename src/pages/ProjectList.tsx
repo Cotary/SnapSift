@@ -41,7 +41,7 @@ export default function ProjectList() {
         <div className="flex items-center gap-3">
           <Camera className="h-8 w-8 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Realphoto</h1>
+            <h1 className="text-2xl font-bold tracking-tight">SnapSift</h1>
             <p className="text-sm text-muted-foreground">
               多媒体整理与去重工具
             </p>

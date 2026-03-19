@@ -2,7 +2,7 @@
 set -euo pipefail
 
 echo "========================================"
-echo "  Realphoto - 生产构建 (macOS / Linux)"
+echo "  SnapSift - Production Build (macOS / Linux)"
 echo "========================================"
 echo
 

@@ -1,5 +1,5 @@
 """
-Export MobileNet-v3-Small to ONNX for Realphoto's AI similarity detection.
+Export MobileNet-v3-Small to ONNX for SnapSift's AI similarity detection.
 
 Requirements:
     pip install torch torchvision onnx

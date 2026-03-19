@@ -1,8 +1,8 @@
 @echo off
-title Realphoto - Dev Mode
+title SnapSift - Dev Mode
 
 echo ========================================
-echo   Realphoto - Dev Environment (Windows)
+echo   SnapSift - Dev Environment (Windows)
 echo ========================================
 echo.
 
