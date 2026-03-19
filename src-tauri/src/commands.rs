@@ -163,6 +163,7 @@ pub async fn scan_target(
 #[tauri::command]
 pub async fn find_duplicates(
     project_id: String,
+    mode: Option<String>,
     phash_threshold: Option<u32>,
     cosine_threshold: Option<f32>,
     state: State<'_, Database>,
@@ -184,7 +185,7 @@ pub async fn find_duplicates(
     let scan_ms = scan_start.elapsed().as_millis() as u64;
 
     let mut result =
-        crate::dedup::find_duplicates(&state, &project_id, phash_threshold, cosine_threshold, target_dir, &window)?;
+        crate::dedup::find_duplicates(&state, &project_id, mode.as_deref(), phash_threshold, cosine_threshold, target_dir, &window)?;
 
     result.timings.insert(
         0,

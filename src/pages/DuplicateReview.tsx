@@ -98,6 +98,7 @@ export default function DuplicateReview() {
   const [lastDedupResult, setLastDedupResult] = useState<DedupResult | null>(null);
   const [dedupProgress, setDedupProgress] = useState<DedupProgress | null>(null);
 
+  const [analysisMode, setAnalysisMode] = useState<"phash" | "phash_ai" | "ai">("phash_ai");
   const [phashThreshold, setPhashThreshold] = useState(8);
   const [cosineThreshold, setCosineThreshold] = useState(93);
 
@@ -128,7 +129,7 @@ export default function DuplicateReview() {
   }, []);
 
   const findMutation = useMutation({
-    mutationFn: () => findDuplicates(id!, phashThreshold, cosineThreshold / 100),
+    mutationFn: () => findDuplicates(id!, analysisMode, phashThreshold, cosineThreshold / 100),
     onSuccess: (result) => {
       setLastDedupResult(result);
       setDedupProgress(null);
@@ -350,20 +351,39 @@ export default function DuplicateReview() {
           <div className="flex flex-col gap-2 text-xs">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <label className="w-20 text-muted-foreground shrink-0">pHash ≤ {phashThreshold}</label>
-              <input
-                type="range"
-                min={2}
-                max={16}
-                step={1}
-                value={phashThreshold}
-                onChange={(e) => setPhashThreshold(Number(e.target.value))}
+              <Select
+                value={analysisMode}
+                onValueChange={(val) => { if (val) setAnalysisMode(val as "phash" | "phash_ai" | "ai"); }}
                 disabled={findMutation.isPending}
-                className="w-28 h-1.5 accent-primary cursor-pointer"
-              />
-              <span className="text-muted-foreground w-14 text-right">{phashThreshold <= 5 ? "严格" : phashThreshold <= 8 ? "推荐" : phashThreshold <= 12 ? "宽松" : "极宽松"}</span>
+              >
+                <SelectTrigger className="h-6 w-auto gap-1.5 text-xs px-2 py-0">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="phash">pHash Only</SelectItem>
+                  <SelectItem value="phash_ai">pHash + AI</SelectItem>
+                  {aiStatus?.available && <SelectItem value="ai">Pure AI</SelectItem>}
+                </SelectContent>
+              </Select>
             </div>
-            {aiStatus?.available && (
+            {analysisMode !== "ai" && (
+              <div className="flex items-center gap-2">
+                <Hash className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <label className="w-20 text-muted-foreground shrink-0">pHash ≤ {phashThreshold}</label>
+                <input
+                  type="range"
+                  min={2}
+                  max={16}
+                  step={1}
+                  value={phashThreshold}
+                  onChange={(e) => setPhashThreshold(Number(e.target.value))}
+                  disabled={findMutation.isPending}
+                  className="w-28 h-1.5 accent-primary cursor-pointer"
+                />
+                <span className="text-muted-foreground w-14 text-right">{phashThreshold <= 5 ? "严格" : phashThreshold <= 8 ? "推荐" : phashThreshold <= 12 ? "宽松" : "极宽松"}</span>
+              </div>
+            )}
+            {analysisMode !== "phash" && aiStatus?.available && (
               <div className="flex items-center gap-2">
                 <Brain className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 <label className="w-20 text-muted-foreground shrink-0">AI ≥ {cosineThreshold}%</label>

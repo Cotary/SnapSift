@@ -72,10 +72,11 @@ export async function scanTarget(projectId: string): Promise<ScanResult> {
 
 export async function findDuplicates(
   projectId: string,
+  mode?: string,
   phashThreshold?: number,
   cosineThreshold?: number
 ): Promise<DedupResult> {
-  return invoke("find_duplicates", { projectId, phashThreshold, cosineThreshold });
+  return invoke("find_duplicates", { projectId, mode, phashThreshold, cosineThreshold });
 }
 
 export async function getDuplicateGroups(
